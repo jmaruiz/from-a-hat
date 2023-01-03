@@ -1,6 +1,7 @@
 import { useState } from 'preact/hooks'
 import './app.css'
 import hatImg from './assets/hat_temp.png'
+import Hat from './hat'
 
 // firebase imports
 import { initializeApp } from "firebase/app";
@@ -37,13 +38,13 @@ function Landing({user, signIn}) {
     <>
       <img src={hatImg} alt="top hat" class="mx-auto my-0" />
       <h1 class="text-6xl font-sans font-semibold text-white text-violet-600">From a Hat</h1>
-      <p class="text-gray-300 mt-3 mb-5 font-extralight text-justify">
+      <p class="text-gray-300 mt-4 mb-4 font-extralight text-justify">
         Get the party started! Create a custom hat and fill it with topics on your own or with a group.
         Whether you're on a date, at a game night, or breaking the ice with a new group,
         spice it up with topics <span class="font-semibold text-white">"From a Hat"</span>!
       </p>
       <button
-        class="bg-violet-600 hover:bg-violet-500 px-5 py-2 w-full font-bold rounded-lg text-white"
+        class="bg-violet-600 hover:bg-violet-500 px-4 py-2 w-full font-bold rounded-lg text-white"
         onClick={() => signIn()}>
         GET STARTED
       </button>
@@ -51,9 +52,17 @@ function Landing({user, signIn}) {
   )
 }
 
-function Hat({hat}) {
+function HatListItem({hat}) {
   return (
-    <p>{hat.uid}</p>
+    <div class="flex content-center text-white w-full bg-white/20 rounded-lg p-2 my-4">
+      <div class="w-8 flex">
+        <img src={hatImg} alt="" class="w-full h-auto" />
+      </div>
+      <div class="flex flex-col px-4">
+        <div>{hat.text}</div>
+        <div>Created: {new Date(hat.createdAt.seconds * 1000).toLocaleDateString()}</div>
+      </div>
+    </div>
   )
 }
 
@@ -68,12 +77,13 @@ function HatList() {
     <div>
       {error && <p class="bg-red-600 text-white">Error: {JSON.stringify(error)}</p>}
       {loading && <p>Collection: Loading...</p>}
-      {values && (
-        values.map(hat => <Hat hat={hat}/>)
+      {values && <div class="text-white text-lg font-bold mb-4">Your Hats</div>}
+      {values && values.length > 0 && (
+        values.map(hat => <HatListItem hat={hat}/>)
       )}
-      <div>Hat List</div>
+      
       <button 
-        class="bg-violet-600 hover:bg-violet-500 px-5 py-2 mt-5 w-full font-bold rounded-lg text-white"
+        class="bg-violet-600 hover:bg-violet-500 px-4 py-2 mt-4 w-full font-bold rounded-lg text-white"
         onClick={createHat}>
         Create a Hat
       </button>
@@ -86,7 +96,7 @@ export function App() {
   const [signInWithGoogle, user, loading, error] = useSignInWithGoogle(auth)
 
   return (
-    <div class="p-5">
+    <div class="p-4">
       <Menubar />
       {user ? <HatList /> : <Landing user={user} signIn={signInWithGoogle} />}
     </div>
